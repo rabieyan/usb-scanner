@@ -16,13 +16,13 @@ OUT="/var/log/usb-scans/${PART}-$(date -u +%Y%m%dT%H%M%SZ)"
 
 mkdir -p "$MNT" "$OUT"
 
-# 2. Mount read-only, safest flags
+# 3. Mount read-only, safest flags
 mount -o ro,nosuid,nodev,noexec "$DEV" "$MNT" || {
   echo "Mount failed for $DEV" >&2
   exit 1
 }
 
-# 3. Pull/build the scanner image first (do once): docker build -t usb-scanner:latest /opt/usb-scanner
+# 4. Pull/build the scanner image first (do once): docker build -t usb-scanner:latest /opt/usb-scanner
 docker run --rm \
   -v "$MNT":/scan:ro \
   -v "$OUT":/out \
@@ -44,7 +44,7 @@ echo "Scan complete. See $OUT"
 cd /opt/usb-scanner
 docker build -t usb-scanner:latest .
 
-# 4. Dry run without udev (replace /media/me/USB with your mount):
+# 5. Dry run without udev (replace /media/me/USB with your mount):
 docker run --rm \
   -v /media/me/USB:/scan:ro \
   -v "$PWD/out":/out \
@@ -53,6 +53,6 @@ docker run --rm \
   --pids-limit 256 \
   usb-scanner:latest
 
-# 5. See results:
+# 6. See results:
 ls -l out/
 cat out/report.json | head
